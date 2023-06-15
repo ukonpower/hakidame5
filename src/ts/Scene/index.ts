@@ -1,10 +1,9 @@
 import * as GLP from 'glpower';
-import { Entity, EntityResizeEvent, EntityUpdateEvent } from '../libs/framework/Entity';
 import { Carpenter } from './Carpenter';
-import { Renderer } from '../libs/framework/Renderer';
 import { gl, globalUniforms, power } from '../Globals';
 
 import { MainCamera } from './Entities/MainCamera';
+import { Renderer } from './Renderer';
 
 
 export class Scene extends GLP.EventEmitter {
@@ -13,8 +12,8 @@ export class Scene extends GLP.EventEmitter {
 	private elapsedTime: number;
 	private deltaTime: number;
 
-	private root: Entity;
-	private camera: Entity;
+	private root: GLP.Entity;
+	private camera: GLP.Entity;
 	private renderer: Renderer;
 
 	private carpenter: Carpenter;
@@ -31,7 +30,7 @@ export class Scene extends GLP.EventEmitter {
 
 		// root
 
-		this.root = new Entity();
+		this.root = new GLP.Entity();
 
 		// camera
 
@@ -50,7 +49,7 @@ export class Scene extends GLP.EventEmitter {
 		forwardBuffer.setDepthTexture( gBuffer.depthTexture );
 		forwardBuffer.setTexture( [ deferredBuffer.textures[ 0 ] ] );
 
-		this.root.on( 'resize', ( event: EntityResizeEvent ) => {
+		this.root.on( 'resize', ( event: GLP.EntityResizeEvent ) => {
 
 			gBuffer.setSize( event.resolution );
 			deferredBuffer.setSize( event.resolution );
@@ -83,7 +82,7 @@ export class Scene extends GLP.EventEmitter {
 		globalUniforms.time.uTime.value = this.elapsedTime;
 		globalUniforms.time.uFractTime.value = this.elapsedTime % 1;
 
-		const event: EntityUpdateEvent = {
+		const event: GLP.EntityUpdateEvent = {
 			time: this.elapsedTime,
 			deltaTime: this.deltaTime,
 		};

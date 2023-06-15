@@ -1,11 +1,8 @@
 import * as GLP from 'glpower';
 
 export const canvas = document.createElement( "canvas" );
-
 export const gl = canvas.getContext( 'webgl2' )!;
-
 export const power = new GLP.Power( gl );
-
 export const blidge = new GLP.BLidge();
 
 export const globalUniforms: {[key: string]: GLP.Uniforms} = {

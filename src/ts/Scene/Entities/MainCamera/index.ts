@@ -1,12 +1,8 @@
 import * as GLP from 'glpower';
 
 import { canvas, gl, globalUniforms, power } from "~/ts/Globals";
-import { PostProcess } from "~/ts/libs/framework/Components/PostProcess";
-import { PostProcessPass } from "~/ts/libs/framework/Components/PostProcessPass";
-import { Entity, EntityResizeEvent } from "~/ts/libs/framework/Entity";
-import { RenderCamera, RenderCameraParam } from '~/ts/libs/framework/Components/Camera/RenderCamera';
-import { OrbitControls } from '~/ts/libs/framework/Components/OrbitControls';
-import { ComponentResizeEvent, ComponentUpdateEvent } from '~/ts/libs/framework/Components';
+import { LookAt } from '../../Components/LookAt';
+import { ShakeViewer } from '../../Components/ShakeViewer';
 
 import fxaaFrag from './shaders/fxaa.fs';
 import bloomBlurFrag from './shaders/bloomBlur.fs';
@@ -18,15 +14,13 @@ import dofComposite from './shaders/dofComposite.fs';
 import dofBokeh from './shaders/dofBokeh.fs';
 import ssCompositeFrag from './shaders/ssComposite.fs';
 import compositeFrag from './shaders/composite.fs';
-import { LookAt } from '~/ts/libs/framework/Components/LookAt';
-import { ShakeViewer } from '~/ts/libs/framework/Components/ShakeViewer';
-import { RotateViewer } from '~/ts/libs/framework/Components/RotateViewer';
+import { OrbitControls } from '../../Components/OrbitControls';
 
-export class MainCamera extends Entity {
+export class MainCamera extends GLP.Entity {
 
 	private commonUniforms: GLP.Uniforms;
 
-	private cameraComponent: RenderCamera;
+	private cameraComponent: GLP.RenderCamera;
 
 	private baseFov: number;
 
@@ -38,47 +32,47 @@ export class MainCamera extends Entity {
 
 	// fxaa
 
-	private fxaa: PostProcessPass;
+	private fxaa: GLP.PostProcessPass;
 
 	// bloom
 
 	private bloomRenderCount: number;
-	private bloomBright: PostProcessPass;
-	private bloomBlur: PostProcessPass[];
+	private bloomBright: GLP.PostProcessPass;
+	private bloomBlur: GLP.PostProcessPass[];
 	private rtBloomVertical: GLP.GLPowerFrameBuffer[];
 	private rtBloomHorizonal: GLP.GLPowerFrameBuffer[];
 
 	// light shaft
 
-	private lightShaft: PostProcessPass;
+	private lightShaft: GLP.PostProcessPass;
 	public rtLightShaft1: GLP.GLPowerFrameBuffer;
 	public rtLightShaft2: GLP.GLPowerFrameBuffer;
 
 	// ssr
 
-	private ssr: PostProcessPass;
+	private ssr: GLP.PostProcessPass;
 	public rtSSR1: GLP.GLPowerFrameBuffer;
 	public rtSSR2: GLP.GLPowerFrameBuffer;
 
 	// ss composite
 
-	private ssComposite: PostProcessPass;
+	private ssComposite: GLP.PostProcessPass;
 
 	// dof
 
 	private dofParams: GLP.Vector;
-	private dofTarget: Entity | null;
+	private dofTarget: GLP.Entity | null;
 
-	public dofCoc: PostProcessPass;
-	public dofBokeh: PostProcessPass;
-	public dofComposite: PostProcessPass;
+	public dofCoc: GLP.PostProcessPass;
+	public dofBokeh: GLP.PostProcessPass;
+	public dofComposite: GLP.PostProcessPass;
 	public rtDofCoc: GLP.GLPowerFrameBuffer;
 	public rtDofBokeh: GLP.GLPowerFrameBuffer;
 	public rtDofComposite: GLP.GLPowerFrameBuffer;
 
 	// composite
 
-	private composite: PostProcessPass;
+	private composite: GLP.PostProcessPass;
 
 	// resolutions
 
@@ -91,7 +85,7 @@ export class MainCamera extends Entity {
 	private tmpVector1: GLP.Vector;
 	private tmpVector2: GLP.Vector;
 
-	constructor( param: RenderCameraParam ) {
+	constructor( param: GLP.RenderCameraParam ) {
 
 		super();
 
@@ -99,7 +93,7 @@ export class MainCamera extends Entity {
 
 		// components
 
-		this.cameraComponent = this.addComponent( "camera", new RenderCamera( param ) );
+		this.cameraComponent = this.addComponent( "camera", new GLP.RenderCamera( param ) );
 		this.addComponent( 'orbitControls', new OrbitControls( canvas ) );
 
 		const lookAt = this.addComponent( 'lookAt', new LookAt() );
@@ -141,7 +135,7 @@ export class MainCamera extends Entity {
 			power.createTexture().setting( { magFilter: gl.LINEAR, minFilter: gl.LINEAR } ),
 		] );
 
-		this.lightShaft = new PostProcessPass( {
+		this.lightShaft = new GLP.PostProcessPass( {
 			input: [],
 			frag: lightShaftFrag,
 			renderTarget: this.rtLightShaft1,
@@ -167,7 +161,7 @@ export class MainCamera extends Entity {
 			power.createTexture().setting( { magFilter: gl.LINEAR, minFilter: gl.LINEAR } ),
 		] );
 
-		this.ssr = new PostProcessPass( {
+		this.ssr = new GLP.PostProcessPass( {
 			input: [ param.renderTarget.gBuffer.textures[ 0 ], param.renderTarget.gBuffer.textures[ 1 ] ],
 			frag: ssrFrag,
 			renderTarget: this.rtSSR1,
@@ -197,7 +191,7 @@ export class MainCamera extends Entity {
 
 		// ss-composite
 
-		this.ssComposite = new PostProcessPass( {
+		this.ssComposite = new GLP.PostProcessPass( {
 			input: [ param.renderTarget.gBuffer.textures[ 0 ], param.renderTarget.gBuffer.textures[ 1 ], param.renderTarget.forwardBuffer.textures[ 0 ] ],
 			frag: ssCompositeFrag,
 			uniforms: GLP.UniformsUtils.merge( this.commonUniforms, {
@@ -230,7 +224,7 @@ export class MainCamera extends Entity {
 		this.dofTarget = null;
 		this.dofParams = new GLP.Vector( 10, 0.05, 20, 0.05 );
 
-		this.dofCoc = new PostProcessPass( {
+		this.dofCoc = new GLP.PostProcessPass( {
 			input: [ this.rt1.textures[ 0 ], param.renderTarget.gBuffer.depthTexture ],
 			frag: dofCoc,
 			uniforms: GLP.UniformsUtils.merge( globalUniforms.time, {
@@ -242,7 +236,7 @@ export class MainCamera extends Entity {
 			renderTarget: this.rtDofCoc,
 		} );
 
-		this.dofBokeh = new PostProcessPass( {
+		this.dofBokeh = new GLP.PostProcessPass( {
 			input: [ this.rtDofCoc.textures[ 0 ] ],
 			frag: dofBokeh,
 			uniforms: GLP.UniformsUtils.merge( globalUniforms.time, {
@@ -254,7 +248,7 @@ export class MainCamera extends Entity {
 			renderTarget: this.rtDofBokeh
 		} );
 
-		this.dofComposite = new PostProcessPass( {
+		this.dofComposite = new GLP.PostProcessPass( {
 			input: [ this.rt1.textures[ 0 ], this.rtDofBokeh.textures[ 0 ] ],
 			frag: dofComposite,
 			uniforms: GLP.UniformsUtils.merge( {} ),
@@ -263,7 +257,7 @@ export class MainCamera extends Entity {
 
 		// fxaa
 
-		this.fxaa = new PostProcessPass( {
+		this.fxaa = new GLP.PostProcessPass( {
 			input: [ this.rtDofComposite.textures[ 0 ] ],
 			frag: fxaaFrag,
 			uniforms: this.commonUniforms,
@@ -289,7 +283,7 @@ export class MainCamera extends Entity {
 
 		}
 
-		this.bloomBright = new PostProcessPass( {
+		this.bloomBright = new GLP.PostProcessPass( {
 			input: this.rt1.textures,
 			frag: bloomBrightFrag,
 			uniforms: GLP.UniformsUtils.merge( globalUniforms.time, {
@@ -315,7 +309,7 @@ export class MainCamera extends Entity {
 			const resolution = new GLP.Vector();
 			this.resolutionBloom.push( resolution );
 
-			this.bloomBlur.push( new PostProcessPass( {
+			this.bloomBlur.push( new GLP.PostProcessPass( {
 				input: bloomInput,
 				renderTarget: rtVertical,
 				frag: bloomBlurFrag,
@@ -338,7 +332,7 @@ export class MainCamera extends Entity {
 				}
 			} ) );
 
-			this.bloomBlur.push( new PostProcessPass( {
+			this.bloomBlur.push( new GLP.PostProcessPass( {
 				input: rtVertical.textures,
 				renderTarget: rtHorizonal,
 				frag: bloomBlurFrag,
@@ -366,7 +360,7 @@ export class MainCamera extends Entity {
 
 		// composite
 
-		this.composite = new PostProcessPass( {
+		this.composite = new GLP.PostProcessPass( {
 			input: [ this.rt1.textures[ 0 ] ],
 			frag: compositeFrag,
 			uniforms: GLP.UniformsUtils.merge( this.commonUniforms, {
@@ -384,7 +378,7 @@ export class MainCamera extends Entity {
 		// DEBUG
 		// this.composite.input = [ param.renderTarget.deferredBuffer.textures[ 0 ] ];
 
-		this.addComponent( "postprocess", new PostProcess( {
+		this.addComponent( "postprocess", new GLP.PostProcess( {
 			input: param.renderTarget.gBuffer.textures,
 			passes: [
 				this.lightShaft,
@@ -402,7 +396,7 @@ export class MainCamera extends Entity {
 
 		// events
 
-		this.on( 'notice/sceneCreated', ( root: Entity ) => {
+		this.on( 'notice/sceneCreated', ( root: GLP.Entity ) => {
 
 			lookAt.setTarget( root.getEntityByName( "CameraTarget" ) || null );
 			this.dofTarget = root.getEntityByName( 'CameraTargetDof' ) || null;
@@ -455,7 +449,7 @@ export class MainCamera extends Entity {
 
 	}
 
-	protected updateImpl( event: ComponentUpdateEvent ): void {
+	protected updateImpl( event: GLP.ComponentUpdateEvent ): void {
 
 		// dof params
 
@@ -499,7 +493,7 @@ export class MainCamera extends Entity {
 
 	}
 
-	protected resizeImpl( e: ComponentResizeEvent ): void {
+	protected resizeImpl( e: GLP.ComponentResizeEvent ): void {
 
 		this.resolution.copy( e.resolution );
 		this.resolutionInv.set( 1.0 / e.resolution.x, 1.0 / e.resolution.y, 0.0, 0.0 );

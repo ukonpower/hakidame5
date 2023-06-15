@@ -1,25 +1,21 @@
 import * as GLP from 'glpower';
 import { blidge } from '~/ts/Globals';
-import { Entity } from '~/ts/libs/framework/Entity';
-import { BLidger } from '~/ts/libs/framework/Components/BLidger';
-import { RenderCamera } from '~/ts/libs/framework/Components/Camera/RenderCamera';
-
 import SceneData from './scene/scene.json';
 import { router } from './router';
 
 export class Carpenter extends GLP.EventEmitter {
 
-	private root: Entity;
-	private blidgeRoot: Entity | null;
-	private camera: Entity;
-	private entities: Map<string, Entity>;
+	private root: GLP.Entity;
+	private blidgeRoot: GLP.Entity | null;
+	private camera: GLP.Entity;
+	private entities: Map<string, GLP.Entity>;
 
 	// frame
 
 	private playing: boolean;
 	private playTime: number;
 
-	constructor( root: Entity, camera: Entity ) {
+	constructor( root: GLP.Entity, camera: GLP.Entity ) {
 
 		super();
 
@@ -63,20 +59,20 @@ export class Carpenter extends GLP.EventEmitter {
 
 		const timeStamp = new Date().getTime();
 
-		const _ = ( node: GLP.BLidgeNode ): Entity => {
+		const _ = ( node: GLP.BLidgeNode ): GLP.Entity => {
 
-			const entity: Entity = node.type == 'camera' ? this.camera : ( this.entities.get( node.name ) || router( node ) );
+			const entity: GLP.Entity = node.type == 'camera' ? this.camera : ( this.entities.get( node.name ) || router( node ) );
 
 			if ( node.type == 'camera' ) {
 
 				const cameraParam = node.param as GLP.BLidgeCameraParam;
-				const renderCamera = this.camera.getComponent<RenderCamera>( "camera" )!;
+				const renderCamera = this.camera.getComponent<GLP.RenderCamera>( "camera" )!;
 				renderCamera.fov = cameraParam.fov;
 				renderCamera.updateProjectionMatrix();
 
 			}
 
-			entity.addComponent( "blidger", new BLidger( node ) );
+			entity.addComponent( "blidger", new GLP.BLidger( blidge, node ) );
 
 			node.children.forEach( c => {
 

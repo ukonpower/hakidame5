@@ -1,6 +1,5 @@
 import * as GLP from 'glpower';
 
-import { Entity } from "~/ts/libs/framework/Entity";
 import { Content } from '../Entities/Content';
 import { TraficLines } from '../Entities/TraficLines';
 import { Rings } from '../Entities/Rings';
@@ -27,6 +26,6 @@ export const router = ( node: GLP.BLidgeNode ) => {
 
 	}
 
-	return new Entity();
+	return new GLP.Entity();
 
 };

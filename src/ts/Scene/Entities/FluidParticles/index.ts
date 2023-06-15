@@ -1,21 +1,15 @@
 import * as GLP from 'glpower';
 
-import { Material } from '~/ts/libs/framework/Components/Material';
-import { Entity } from '~/ts/libs/framework/Entity';
-import { hotGet, hotUpdate } from '~/ts/libs/framework/Utils/Hot';
-import { globalUniforms } from '~/ts/Globals';
-
-import { GPUCompute } from '~/ts/libs/framework/Components/GPUCompute';
-import { GPUComputePass } from '~/ts/libs/framework/Components/GPUComputePass';
+import { gl, globalUniforms } from '~/ts/Globals';
+import { hotGet, hotUpdate } from '~/ts/libs/glpower_local/Framework/Utils/Hot';
 
 import fluidParticlesVert from './shaders/fluidParticles.vs';
 import fluidParticlesFrag from './shaders/fluidParticles.fs';
 import fluidParticlesCompute from './shaders/fluidParticlesCompute.glsl';
-import { SphereGeometry } from '~/ts/libs/framework/Components/Geometry/SphereGeometry';
 
-export class FluidParticles extends Entity {
+export class FluidParticles extends GLP.Entity {
 
-	private gpu: GPUComputePass;
+	private gpu: GLP.GPUComputePass;
 
 	constructor() {
 
@@ -25,7 +19,7 @@ export class FluidParticles extends Entity {
 
 		// gpu
 
-		this.gpu = new GPUComputePass( {
+		this.gpu = new GLP.GPUComputePass( gl, {
 			size: count,
 			layerCnt: 2,
 			frag: fluidParticlesCompute,
@@ -38,7 +32,7 @@ export class FluidParticles extends Entity {
 
 		} );
 
-		this.addComponent( "gpuCompute", new GPUCompute( { passes: [
+		this.addComponent( "gpuCompute", new GLP.GPUCompute( { passes: [
 			this.gpu
 		] } ) );
 
@@ -66,14 +60,14 @@ export class FluidParticles extends Entity {
 
 		}
 
-		const geo = this.addComponent( "geometry", new SphereGeometry( 0.1, ) );
+		const geo = this.addComponent( "geometry", new GLP.SphereGeometry( 0.1, ) );
 		geo.setAttribute( "offsetPosition", new Float32Array( positionArray ), 3, { instanceDivisor: 1 } );
 		geo.setAttribute( "computeUV", new Float32Array( computeUVArray ), 2, { instanceDivisor: 1 } );
 		geo.setAttribute( "id", new Float32Array( idArray ), 3, { instanceDivisor: 1 } );
 
 		// material
 
-		const mat = this.addComponent( "material", new Material( {
+		const mat = this.addComponent( "material", new GLP.Material( {
 			name: "fluid",
 			type: [ "deferred", 'shadowMap' ],
 			uniforms: GLP.UniformsUtils.merge( globalUniforms.time, globalUniforms.resolution, {

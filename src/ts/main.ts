@@ -6,7 +6,6 @@ import config from '../../config.json';
 class App {
 
 	private scene: Scene;
-
 	private canvas: HTMLCanvasElement;
 	private canvasWrap: HTMLElement;
 

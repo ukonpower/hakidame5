@@ -1,15 +1,12 @@
 import * as GLP from 'glpower';
 
-import { Material } from '~/ts/libs/framework/Components/Material';
-import { Entity } from '~/ts/libs/framework/Entity';
-import { hotGet, hotUpdate } from '~/ts/libs/framework/Utils/Hot';
 import { globalUniforms } from '~/ts/Globals';
 
 import ringsVert from './shaders/rings.vs';
 import ringsFrag from './shaders/rings.fs';
-import { RingGeometry } from '~/ts/libs/framework/Components/Geometry/RingGeometry';
+import { hotGet, hotUpdate } from '~/ts/libs/glpower_local/Framework/Utils/Hot';
 
-export class Rings extends Entity {
+export class Rings extends GLP.Entity {
 
 	constructor() {
 
@@ -42,13 +39,13 @@ export class Rings extends Entity {
 
 		const r = 0.9;
 
-		const geo = this.addComponent( "geometry", new RingGeometry( r, r * 0.98, 64, 1 ) );
+		const geo = this.addComponent( "geometry", new GLP.RingGeometry( r, r * 0.98, 64, 1 ) );
 		geo.setAttribute( "offsetPosition", new Float32Array( positionArray ), 3, { instanceDivisor: 1 } );
 		geo.setAttribute( "id", new Float32Array( idArray ), 3, { instanceDivisor: 1 } );
 
 		// material
 
-		const mat = this.addComponent( "material", new Material( {
+		const mat = this.addComponent( "material", new GLP.Material( {
 			name: "rings",
 			type: [ "deferred", "shadowMap" ],
 			uniforms: GLP.UniformsUtils.merge( globalUniforms.time, globalUniforms.resolution, {

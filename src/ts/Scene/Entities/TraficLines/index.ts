@@ -1,16 +1,12 @@
 import * as GLP from 'glpower';
 
-import { Material } from '~/ts/libs/framework/Components/Material';
-import { Entity } from '~/ts/libs/framework/Entity';
-import { hotGet, hotUpdate } from '~/ts/libs/framework/Utils/Hot';
 import { globalUniforms } from '~/ts/Globals';
 
 import traficLinesVert from './shaders/traficLines.vs';
 import traficLinesFrag from './shaders/traficLines.fs';
-import { SphereGeometry } from '~/ts/libs/framework/Components/Geometry/SphereGeometry';
-import { CubeGeometry } from '~/ts/libs/framework/Components/Geometry/CubeGeometry';
+import { hotGet, hotUpdate } from '~/ts/libs/glpower_local/Framework/Utils/Hot';
 
-export class TraficLines extends Entity {
+export class TraficLines extends GLP.Entity {
 
 	constructor() {
 
@@ -42,14 +38,14 @@ export class TraficLines extends Entity {
 
 		}
 
-		const geo = this.addComponent( "geometry", new CubeGeometry( 3.0, 0.05, 0.05 ) );
+		const geo = this.addComponent( "geometry", new GLP.CubeGeometry( 3.0, 0.05, 0.05 ) );
 		geo.setAttribute( "offsetPosition", new Float32Array( positionArray ), 3, { instanceDivisor: 1 } );
 		geo.setAttribute( "computeUV", new Float32Array( computeUVArray ), 2, { instanceDivisor: 1 } );
 		geo.setAttribute( "id", new Float32Array( idArray ), 3, { instanceDivisor: 1 } );
 
 		// material
 
-		const mat = this.addComponent( "material", new Material( {
+		const mat = this.addComponent( "material", new GLP.Material( {
 			name: "traficLine",
 			type: [ "deferred", "shadowMap" ],
 			uniforms: GLP.UniformsUtils.merge( globalUniforms.time, globalUniforms.resolution, {

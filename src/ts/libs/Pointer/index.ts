@@ -1,25 +1,26 @@
-import * as GLP from 'glpower';
+import { Vector } from "../glpower_local/Math/Vector";
+import { EventEmitter } from "../glpower_local/utils/EventEmitter";
 
 export type PointerEventArgs = {
 	pointerEvent: PointerEvent,
-	position: GLP.Vector,
-	delta: GLP.Vector,
+	position: Vector,
+	delta: Vector,
 }
 
-export class Pointer extends GLP.EventEmitter {
+export class Pointer extends EventEmitter {
 
 	protected isTouching: boolean;
 	public element: HTMLElement | null = null;
 
-	public position: GLP.Vector;
-	public delta: GLP.Vector;
+	public position: Vector;
+	public delta: Vector;
 
 	constructor() {
 
 		super();
 
-		this.position = new GLP.Vector( NaN, NaN );
-		this.delta = new GLP.Vector( NaN, NaN );
+		this.position = new Vector( NaN, NaN );
+		this.delta = new Vector( NaN, NaN );
 		this.isTouching = false;
 
 		/*-------------------------------
@@ -82,9 +83,9 @@ export class Pointer extends GLP.EventEmitter {
 
 	}
 
-	public getScreenPosition( windowSize: GLP.Vector ) {
+	public getScreenPosition( windowSize: Vector ) {
 
-		if ( this.position.x != this.position.x ) return new GLP.Vector( NaN, NaN );
+		if ( this.position.x != this.position.x ) return new Vector( NaN, NaN );
 
 		const p = this.position.clone().divide( windowSize ).multiply( 2.0 ).sub( 1.0 );
 		p.y *= - 1;
@@ -107,7 +108,7 @@ export class Pointer extends GLP.EventEmitter {
 
 		}
 
-		const p = new GLP.Vector( x, y );
+		const p = new Vector( x, y );
 
 		return p;
 
