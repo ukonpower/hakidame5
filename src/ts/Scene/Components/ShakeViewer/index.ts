@@ -2,15 +2,17 @@ import * as GLP from 'glpower';
 
 export class ShakeViewer extends GLP.Component {
 
+	private shakePower: number;
 	private shakeMatrix: GLP.Matrix;
 	private shakeQua: GLP.Quaternion;
 
 	private cameraComponent?: GLP.Camera;
 
-	constructor() {
+	constructor( shakePower: number = 1.0 ) {
 
 		super();
 
+		this.shakePower = shakePower;
 		this.shakeMatrix = new GLP.Matrix();
 		this.shakeQua = new GLP.Quaternion();
 
@@ -51,7 +53,7 @@ export class ShakeViewer extends GLP.Component {
 
 		if ( this.entity ) {
 
-			let shake = 0.008;
+			let shake = 0.008 * this.shakePower;
 
 			if ( this.cameraComponent ) {
 

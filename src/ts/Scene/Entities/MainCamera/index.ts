@@ -15,6 +15,7 @@ import dofBokeh from './shaders/dofBokeh.fs';
 import ssCompositeFrag from './shaders/ssComposite.fs';
 import compositeFrag from './shaders/composite.fs';
 import { OrbitControls } from '../../Components/OrbitControls';
+import { RotateViewer } from '../../Components/RotateViewer';
 
 export class MainCamera extends GLP.Entity {
 
@@ -98,8 +99,8 @@ export class MainCamera extends GLP.Entity {
 
 		const lookAt = this.addComponent( 'lookAt', new LookAt() );
 
-		this.addComponent( 'shakeViewer', new ShakeViewer() );
-		// this.addComponent( 'rotateViewer', new RotateViewer() );
+		this.addComponent( 'shakeViewer', new ShakeViewer( 0.5 ) );
+		this.addComponent( 'rotateViewer', new RotateViewer( 2.0 ) );
 
 		// resolution
 
@@ -538,7 +539,7 @@ export class MainCamera extends GLP.Entity {
 		this.cameraComponent.near = 0.1;
 		this.cameraComponent.far = 1000;
 		this.cameraComponent.aspect = resolution.x / resolution.y;
-		this.cameraComponent.fov = this.baseFov + Math.max( 0, 1 / this.cameraComponent.aspect - 1 ) * 15.0;
+		this.cameraComponent.fov = this.baseFov + Math.max( 0, 1 / this.cameraComponent.aspect - 1 ) * 20.0;
 		this.cameraComponent.updateProjectionMatrix();
 
 	}

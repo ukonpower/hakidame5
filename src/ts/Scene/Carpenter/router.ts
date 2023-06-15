@@ -1,28 +1,14 @@
 import * as GLP from 'glpower';
 
-import { Content } from '../Entities/Content';
-import { TraficLines } from '../Entities/TraficLines';
-import { Rings } from '../Entities/Rings';
+import { Tree } from '../Entities/Tree';
 
 export const router = ( node: GLP.BLidgeNode ) => {
 
-	// object
+	// class
 
-	if ( node.name == "Content" ) {
+	if ( node.class == "Tree" ) {
 
-		return new Content();
-
-	} else if ( node.name == "Rings" ) {
-
-		return new Rings();
-
-	}
-
-	// material
-
-	if ( node.material.name == "TraficLines" ) {
-
-		return new TraficLines();
+		return new Tree();
 
 	}
 
