@@ -29,6 +29,7 @@ export * from './Framework/Component/Geometry/CubeGeometry';
 export * from './Framework/Component/Geometry/PlaneGeometry';
 export * from './Framework/Component/Geometry/RingGeometry';
 export * from './Framework/Component/Geometry/SphereGeometry';
+export * from './Framework/Component/Geometry/CylinderGeometry';
 export * from './Framework/Component/GPUCompute';
 export * from './Framework/Component/GPUComputePass';
 export * from './Framework/Component/Light';

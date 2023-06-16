@@ -8,6 +8,7 @@ import { Vector } from "../../../Math/Vector";
 import { SphereGeometry } from "../Geometry/SphereGeometry";
 import { CubeGeometry } from "../Geometry/CubeGeometry";
 import { BLidge, BLidgeNode, BLidgeLightParam } from "../../BLidge";
+import { CylinderGeometry } from "../Geometry/CylinderGeometry";
 
 export class BLidger extends Component {
 
@@ -107,6 +108,12 @@ export class BLidger extends Component {
 
 				const sphereParam = this.node.param as any;
 				entity.addComponent( 'geometry', new SphereGeometry( sphereParam.r ) );
+
+			} else if ( this.node.type == 'cylinder' ) {
+
+				const cylinderParam = this.node.param as any;
+
+				entity.addComponent( 'geometry', new CylinderGeometry() );
 
 			}
 
